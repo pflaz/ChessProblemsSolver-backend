@@ -13,7 +13,9 @@ public class Square {
         this.column = column;
         this.row = row;
         this.piece = piece;
-        this.name = Character.getName(column + 65) + row;
+        Character columnChar = (char)(column + 65);
+        String columnLetter = columnChar.toString();
+        this.name = columnLetter + (row + 1);
         if ((column + row) % 2 == 0) {
             this.color = Color.BLACK;
         } else {

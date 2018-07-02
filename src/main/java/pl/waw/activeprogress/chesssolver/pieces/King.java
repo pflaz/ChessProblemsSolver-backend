@@ -5,7 +5,7 @@ import pl.waw.activeprogress.chesssolver.Square;
 
 public class King extends Piece {
 
-    public King(Color color, Square square) {
-        super(Names.KING, color, square);
+    public King(Color color) {
+        super(Names.KING, color);
     }
 }

@@ -5,7 +5,7 @@ import pl.waw.activeprogress.chesssolver.Square;
 
 public class Pawn extends Piece {
 
-    public Pawn(Color color, Square square) {
-        super(Names.PAWN, color, square);
+    public Pawn(Color color) {
+        super(Names.PAWN, color);
     }
 }

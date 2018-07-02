@@ -5,7 +5,7 @@ import pl.waw.activeprogress.chesssolver.Square;
 
 public class Rook extends Piece {
 
-    public Rook(Color color, Square square) {
-        super(Names.ROOK, color, square);
+    public Rook(Color color) {
+        super(Names.ROOK, color);
     }
 }

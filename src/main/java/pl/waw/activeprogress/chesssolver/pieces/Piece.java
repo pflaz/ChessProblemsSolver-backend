@@ -6,13 +6,11 @@ import pl.waw.activeprogress.chesssolver.Square;
 public abstract class Piece {
     private final Names name;
     private final Color color;
-    private Square square;
 
 
-    public Piece(Names name, Color color, Square square) {
+    public Piece(Names name, Color color) {
         this.name = name;
         this.color = color;
-        this.square = square;
     }
 
     public Names getName() {
@@ -23,12 +21,5 @@ public abstract class Piece {
         return color;
     }
 
-    public Square getSquare() {
-        return square;
-    }
-
-    public void setSquare(Square square) {
-        this.square = square;
-    }
 }
 
