@@ -1,5 +1,7 @@
 package pl.waw.activeprogress.chesssolver;
 
+import pl.waw.activeprogress.chesssolver.pieces.Piece;
+
 public class Board {
     private Square[][] squares;
     private boolean whiteKingsideCastlingPossible;
@@ -18,12 +20,39 @@ public class Board {
         enPassantTarget = null;
         halfmoveClock = 0;
         fullmoveNumber = 1;
+        squares = new Square[8][8];
 
         for (int col = 0; col < 8; col++) {
             for (int row = 0; row < 8; row++) {
-
+                squares[col][row] = new Square(col, row, null);
             }
         }
+    }
+
+    public void print() {
+        Piece piece;
+        char letter;
+        System.out.println("-----------------------------------");
+        for (int row = 7; row >= 0; row--) {
+            System.out.print((row + 1) + " | ");
+            for (int col = 0; col < 8; col++) {
+                piece = squares[col][row].getPiece();
+                if (piece != null) {
+                    letter = piece.getClass().getName().charAt(0);
+                    if (piece.getColor() == Color.WHITE) {
+                        Character.toUpperCase(letter);
+                    } else {
+                        Character.toLowerCase(letter);
+                    }
+                } else {
+                    letter = ' ';
+                }
+                System.out.print(letter + " | ");
+            }
+            System.out.println();
+        }
+        System.out.println("-----------------------------------");
+        System.out.println("  | A | B | C | D | E | F | G | H |");
     }
 }
 

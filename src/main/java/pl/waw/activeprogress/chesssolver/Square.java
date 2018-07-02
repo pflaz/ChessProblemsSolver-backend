@@ -3,9 +3,41 @@ package pl.waw.activeprogress.chesssolver;
 import pl.waw.activeprogress.chesssolver.pieces.Piece;
 
 public class Square {
-    private int column;
-    private int row;
+    private final int column;
+    private final int row;
     private Piece piece;
-    private String name;
-    private Color color;
+    private final String name;
+    private final Color color;
+
+    public Square(int column, int row, Piece piece) {
+        this.column = column;
+        this.row = row;
+        this.piece = piece;
+        this.name = Character.getName(column + 65) + row;
+        if ((column + row) % 2 == 0) {
+            this.color = Color.BLACK;
+        } else {
+            this.color = Color.WHITE;
+        }
+    }
+
+    public int getColumn() {
+        return column;
+    }
+
+    public int getRow() {
+        return row;
+    }
+
+    public Piece getPiece() {
+        return piece;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Color getColor() {
+        return color;
+    }
 }
