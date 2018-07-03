@@ -3,6 +3,8 @@ package pl.waw.activeprogress.chesssolver;
 import pl.waw.activeprogress.chesssolver.pieces.*;
 
 import java.security.InvalidParameterException;
+import java.util.Arrays;
+import java.util.Objects;
 
 public class Board {
     private final Square[][] squares;
@@ -198,6 +200,91 @@ public class Board {
         return fullmoveNumber;
     }
 
+    public String getFen() {
+        Piece piece;
+        StringBuffer result = new StringBuffer();
+        char letter = 0;
+        int blankSquaresCount;
+        for (int row = 7; row >= 0; row--) {
+            blankSquaresCount = 0;
+            for (int col = 0; col < 8; col++) {
+                piece = getSquares()[col][row].getPiece();
+                if (piece != null && blankSquaresCount > 0) {
+                    result.append(blankSquaresCount);
+                    blankSquaresCount = 0;
+                }
+                if (piece != null) {
+                    switch (piece.getName()) {
+                        case KING:
+                            letter = 'K';
+                            break;
+                        case QUEEN:
+                            letter = 'Q';
+                            break;
+                        case ROOK:
+                            letter = 'R';
+                            break;
+                        case KNIGHT:
+                            letter = 'N';
+                            break;
+                        case BISHOP:
+                            letter = 'B';
+                            break;
+                        case PAWN:
+                            letter = 'P';
+                    }
+                    if (piece.getColor() == Color.WHITE) {
+                        letter = Character.toUpperCase(letter);
+                    } else {
+                        letter = Character.toLowerCase(letter);
+                    }
+                    result.append(letter);
+                } else {
+                    blankSquaresCount++;
+                }
+            }
+            if (blankSquaresCount > 0) {
+                result.append(blankSquaresCount);
+            }
+            if (row > 0) {
+                result.append("/");
+            }
+        }
+
+        if (getMovingPlayer() == Color.BLACK) {
+            result.append(" b ");
+        } else {
+            result.append(" w ");
+        }
+
+        StringBuffer castlings = new StringBuffer();
+        if (isWhiteKingsideCastlingPossible()) {
+            castlings.append("K");
+        }
+        if (isWhiteQueensideCastlingPossible()) {
+            castlings.append("Q");
+        }
+        if (isBlackKingsideCastlingPossible()) {
+            castlings.append("k");
+        }
+        if (isBlackQueensideCastlingPossible()) {
+            castlings.append("q");
+        }
+        if (castlings.length() == 0) {
+            castlings.append("-");
+        }
+        result.append(castlings).append(" ");
+
+        if (getEnPassantTarget() != null) {
+            result.append(getEnPassantTarget()).append(" ");
+        } else {
+            result.append("- ");
+        }
+
+        result.append(getHalfmoveClock()).append(" ").append(getFullmoveNumber());
+        return result.toString();
+    }
+
     public void print() {
         Piece piece;
         char letter;
@@ -222,6 +309,30 @@ public class Board {
         }
         System.out.println("-----------------------------------");
         System.out.println("  | A | B | C | D | E | F | G | H |");
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Board board = (Board) o;
+        return whiteKingsideCastlingPossible == board.whiteKingsideCastlingPossible &&
+                whiteQueensideCastlingPossible == board.whiteQueensideCastlingPossible &&
+                blackKingsideCastlingPossible == board.blackKingsideCastlingPossible &&
+                blackQueensideCastlingPossible == board.blackQueensideCastlingPossible &&
+                halfmoveClock == board.halfmoveClock &&
+                fullmoveNumber == board.fullmoveNumber &&
+                Arrays.deepEquals(squares, board.squares) &&
+                movingPlayer == board.movingPlayer &&
+                Objects.equals(enPassantTarget, board.enPassantTarget);
+    }
+
+    @Override
+    public int hashCode() {
+
+        int result = Objects.hash(movingPlayer, whiteKingsideCastlingPossible, whiteQueensideCastlingPossible, blackKingsideCastlingPossible, blackQueensideCastlingPossible, enPassantTarget, halfmoveClock, fullmoveNumber);
+        result = 31 * result + Arrays.deepHashCode(squares);
+        return result;
     }
 }
 
