@@ -4,15 +4,15 @@ import java.security.InvalidParameterException;
 
 public class Chesssolver {
     public static void main(String[] args) {
-        String fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        String fen = "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2";
+        Board board = null;
         try {
-            Board board = new Board(fen);
+            board = new Board(fen);
             board.print();
-            String retrievedFen = board.getFen();
-            System.out.println("FEN: " + board.getFen());
-            System.out.println("check: " + fen.equals(retrievedFen));
         } catch (InvalidParameterException e) {
             System.out.println("Cannot create the board: " + e.getMessage());
         }
+
+
     }
 }

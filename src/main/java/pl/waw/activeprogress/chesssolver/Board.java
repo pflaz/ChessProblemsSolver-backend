@@ -6,16 +6,16 @@ import java.security.InvalidParameterException;
 import java.util.Arrays;
 import java.util.Objects;
 
-public class Board {
+public class Board implements Cloneable {
     private final Square[][] squares;
-    private final Color movingPlayer;
+    private Color movingPlayer;
     private final boolean whiteKingsideCastlingPossible;
     private final boolean whiteQueensideCastlingPossible;
     private final boolean blackKingsideCastlingPossible;
     private final boolean blackQueensideCastlingPossible;
-    private final String enPassantTarget;
+    private String enPassantTarget;
     private final int halfmoveClock; // halfmoves since the last capture or pawn advance
-    private final int fullmoveNumber;
+    private int fullmoveNumber;
 
     public Board() {
         movingPlayer = Color.WHITE;
@@ -34,6 +34,7 @@ public class Board {
             }
         }
     }
+
 
     public Board(String fen) {
         String[] fenParts = fen.split(" ");
@@ -164,12 +165,22 @@ public class Board {
         }
     }
 
+
+    @Override
+    protected Board clone() throws CloneNotSupportedException {
+        return (Board)super.clone();
+    }
+
     public Square[][] getSquares() {
         return squares;
     }
 
     public Color getMovingPlayer() {
         return movingPlayer;
+    }
+
+    public void setMovingPlayer(Color movingPlayer) {
+        this.movingPlayer = movingPlayer;
     }
 
     public boolean isWhiteKingsideCastlingPossible() {
@@ -192,12 +203,20 @@ public class Board {
         return enPassantTarget;
     }
 
+    public void setEnPassantTarget(String enPassantTarget) {
+        this.enPassantTarget = enPassantTarget;
+    }
+
     public int getHalfmoveClock() {
         return halfmoveClock;
     }
 
     public int getFullmoveNumber() {
         return fullmoveNumber;
+    }
+
+    public void setFullmoveNumber(int fullmoveNumber) {
+        this.fullmoveNumber = fullmoveNumber;
     }
 
     public String getFen() {

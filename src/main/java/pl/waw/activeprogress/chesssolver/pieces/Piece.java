@@ -34,7 +34,6 @@ public abstract class Piece {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(name, color);
     }
 }
