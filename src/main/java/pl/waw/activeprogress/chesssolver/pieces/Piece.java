@@ -5,7 +5,7 @@ import pl.waw.activeprogress.chesssolver.Square;
 
 import java.util.Objects;
 
-public abstract class Piece {
+public abstract class Piece implements Cloneable {
     private final Names name;
     private final Color color;
 
@@ -21,6 +21,11 @@ public abstract class Piece {
 
     public Color getColor() {
         return color;
+    }
+
+    @Override
+    public Piece clone() throws CloneNotSupportedException {
+        return (Piece)super.clone();
     }
 
     @Override

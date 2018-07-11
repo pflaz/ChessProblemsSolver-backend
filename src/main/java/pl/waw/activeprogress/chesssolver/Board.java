@@ -3,11 +3,12 @@ package pl.waw.activeprogress.chesssolver;
 import pl.waw.activeprogress.chesssolver.pieces.*;
 
 import java.security.InvalidParameterException;
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class Board implements Cloneable {
-    private final Square[][] squares;
+    private Map<String, Square> squares;
     private Color movingPlayer;
     private final boolean whiteKingsideCastlingPossible;
     private final boolean whiteQueensideCastlingPossible;
@@ -26,11 +27,11 @@ public class Board implements Cloneable {
         enPassantTarget = null;
         halfmoveClock = 0;
         fullmoveNumber = 1;
-        squares = new Square[8][8];
+        squares = new HashMap<>();
 
-        for (int col = 0; col < 8; col++) {
-            for (int row = 0; row < 8; row++) {
-                squares[col][row] = new Square(col, row, null);
+        for (char col = 'A'; col <= 'H'; col++) {
+            for (int row = 1; row <= 8; row++) {
+                squares.put(Character.toString(col) + row, new Square(col, row, null));
             }
         }
     }
@@ -43,18 +44,19 @@ public class Board implements Cloneable {
         }
         String[] fenRows = fenParts[0].split("/");
 
-        ///// fenParts[0] -> pieces
+        // fenParts[0] -> pieces
 
         if (fenRows.length != 8) {
             throw new InvalidParameterException("FEN's 1st part should consists of 8 parts divided by '/'");
         }
 
-        squares = new Square[8][8];
-        int row, col;
-        row = 7;
-        for (int fenRow = 0; fenRow < 8; fenRow++) { // reading 7 rows divided by '/'
-            char[] charsInFenRow = fenRows[fenRow].toCharArray();
-            col = 0;
+        squares = new HashMap<>();
+        int row;
+        char col;
+        row = 8;
+        for (String fenRow: fenRows) { // reading rows divided by '/'
+            char[] charsInFenRow = fenRow.toCharArray();
+            col = 'A';
             for (char theChar: charsInFenRow) {
                 Piece piece = null;
                 switch (theChar) {
@@ -97,16 +99,16 @@ public class Board implements Cloneable {
                 }
                 if (piece != null) {
                     Square square = new Square(col, row, piece);
-                    squares[col][row] = square;
+                    squares.put(Character.toString(col) + row, square);
                     col++;
                 } else if ((Character.getNumericValue(theChar) >= 1) && (Character.getNumericValue(theChar) <= 8)) {
                     for (int i = 0; i < Character.getNumericValue(theChar); i++) {
                         Square square = new Square(col, row, null);
-                        squares[col][row] = square;
+                        squares.put(Character.toString(col) + row, square);
                         col++;
                     }
                 } else {
-                    throw new InvalidParameterException("Invalid character in description of row " + (row + 1) + ", column " + (col + 1));
+                    throw new InvalidParameterException("Invalid character in description of row " + row + ", column " + col);
                 }
             }
             row--;
@@ -171,8 +173,25 @@ public class Board implements Cloneable {
         return (Board)super.clone();
     }
 
-    public Square[][] getSquares() {
+    public Map<String, Square> getSquares() {
         return squares;
+    }
+
+    public Board copy() throws CloneNotSupportedException {
+        Board newBoard = clone();
+        newBoard.squares = new HashMap<>();
+
+        for (Map.Entry<String, Square> entry : squares.entrySet()) {
+            newBoard.getSquares().put(entry.getKey(), entry.getValue().copy());
+        }
+        return newBoard;
+    }
+
+    public Square getSquare(String squareName) {
+        if (squareName.charAt(0) < 'A' || squareName.charAt(0) > 'H' || squareName.charAt(1) < '1' || squareName.charAt(1) > '8') {
+            throw new InvalidParameterException("Invalid square name - column should be from 'A' to 'H' and row should be from '1' to '8'");
+        }
+        return squares.get(squareName);
     }
 
     public Color getMovingPlayer() {
@@ -224,10 +243,10 @@ public class Board implements Cloneable {
         StringBuffer result = new StringBuffer();
         char letter = 0;
         int blankSquaresCount;
-        for (int row = 7; row >= 0; row--) {
+        for (int row = 8; row > 0; row--) {
             blankSquaresCount = 0;
-            for (int col = 0; col < 8; col++) {
-                piece = getSquares()[col][row].getPiece();
+            for (char col ='A'; col <= 'H'; col++) {
+                piece = getSquare(Character.toString(col) + row).getPiece();
                 if (piece != null && blankSquaresCount > 0) {
                     result.append(blankSquaresCount);
                     blankSquaresCount = 0;
@@ -265,7 +284,7 @@ public class Board implements Cloneable {
             if (blankSquaresCount > 0) {
                 result.append(blankSquaresCount);
             }
-            if (row > 0) {
+            if (row > 1) {
                 result.append("/");
             }
         }
@@ -308,10 +327,10 @@ public class Board implements Cloneable {
         Piece piece;
         char letter;
         System.out.println("-----------------------------------");
-        for (int row = 7; row >= 0; row--) {
-            System.out.print((row + 1) + " | ");
-            for (int col = 0; col < 8; col++) {
-                piece = squares[col][row].getPiece();
+        for (int row = 8; row > 0; row--) {
+            System.out.print(row + " | ");
+            for (char col = 'A'; col <= 'H'; col++) {
+                piece = getSquare(Character.toString(col) + row).getPiece();
                 if (piece != null) {
                     letter = piece.getName().toString().charAt(0);
                     if (piece.getColor() == Color.WHITE) {
@@ -341,7 +360,7 @@ public class Board implements Cloneable {
                 blackQueensideCastlingPossible == board.blackQueensideCastlingPossible &&
                 halfmoveClock == board.halfmoveClock &&
                 fullmoveNumber == board.fullmoveNumber &&
-                Arrays.deepEquals(squares, board.squares) &&
+                Objects.equals(squares, board.squares) &&
                 movingPlayer == board.movingPlayer &&
                 Objects.equals(enPassantTarget, board.enPassantTarget);
     }
@@ -349,9 +368,7 @@ public class Board implements Cloneable {
     @Override
     public int hashCode() {
 
-        int result = Objects.hash(movingPlayer, whiteKingsideCastlingPossible, whiteQueensideCastlingPossible, blackKingsideCastlingPossible, blackQueensideCastlingPossible, enPassantTarget, halfmoveClock, fullmoveNumber);
-        result = 31 * result + Arrays.deepHashCode(squares);
-        return result;
+        return Objects.hash(squares, movingPlayer, whiteKingsideCastlingPossible, whiteQueensideCastlingPossible, blackKingsideCastlingPossible, blackQueensideCastlingPossible, enPassantTarget, halfmoveClock, fullmoveNumber);
     }
 }
 

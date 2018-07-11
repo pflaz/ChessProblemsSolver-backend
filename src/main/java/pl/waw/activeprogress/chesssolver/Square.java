@@ -4,20 +4,18 @@ import pl.waw.activeprogress.chesssolver.pieces.Piece;
 
 import java.util.Objects;
 
-public class Square {
-    private final int column;
+public class Square implements Cloneable {
+    private final char column;
     private final int row;
     private Piece piece;
     private final String name;
     private final Color color;
 
-    public Square(int column, int row, Piece piece) {
+    public Square(char column, int row, Piece piece) {
         this.column = column;
         this.row = row;
         this.piece = piece;
-        Character columnChar = (char)(column + 65);
-        String columnLetter = columnChar.toString();
-        this.name = columnLetter + (row + 1);
+        this.name = new StringBuilder(this.column).append(this.row).toString();
         if ((column + row) % 2 == 0) {
             this.color = Color.BLACK;
         } else {
@@ -25,7 +23,7 @@ public class Square {
         }
     }
 
-    public int getColumn() {
+    public char getColumn() {
         return column;
     }
 
@@ -47,6 +45,19 @@ public class Square {
 
     public Color getColor() {
         return color;
+    }
+
+    @Override
+    protected Square clone() throws CloneNotSupportedException {
+        return (Square)super.clone();
+    }
+
+    public Square copy() throws CloneNotSupportedException {
+        Square newSquare = clone();
+        if (piece != null) {
+            newSquare.setPiece(newSquare.getPiece().clone());
+        }
+        return newSquare;
     }
 
     @Override

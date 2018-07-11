@@ -7,28 +7,35 @@ import java.security.InvalidParameterException;
 
 public class Mover {
 
-    public Board move(final Board board, final String from, final String to, final String promotedFigure) throws CloneNotSupportedException{
-        Board newBoard = board.clone();
-        final int fromColumn = NotationTranslator.getColumnNumber(from);
-        final int fromRow = NotationTranslator.getRowNumber(from);
-        final int toColumn = NotationTranslator.getColumnNumber(to);
-        final int toRow = NotationTranslator.getRowNumber(to);
+    public Board move(final Board board, String from, String to, String promotedFigure) throws CloneNotSupportedException {
+        from = from.toUpperCase();
+        to = to.toUpperCase();
+        if (promotedFigure != null) {
+            promotedFigure = promotedFigure.toUpperCase();
+        }
 
-        if (fromColumn < 0 || fromColumn > 7 || toColumn < 0 || toColumn > 7 || fromRow < 0 || fromRow > 7 || toRow < 0 || toRow > 7) {
+        Board newBoard = board.copy();
+
+        if (from.charAt(0) < 'A' || from.charAt(0) > 'H' || to.charAt(0) < 'A' || to.charAt(0) > 'H' || from.charAt(1) < '1' || from.charAt(1) > '8' || to.charAt(1) < '1' || to.charAt(1) > '8') {
             throw new InvalidParameterException("Invalid 'from' or 'to' parameter - should be from 'A1' to 'H8'");
         }
 
-        Piece movingPiece = newBoard.getSquares()[fromColumn][fromRow].getPiece();
-        newBoard.getSquares()[fromColumn][fromRow].setPiece(null);
-        newBoard.getSquares()[toColumn][toRow].setPiece(movingPiece);
+        Piece movingPiece = newBoard.getSquare(from).getPiece();
+
+        if (!validMove(board, from, to, promotedFigure)) {
+            throw new InvalidParameterException("Invalid move");
+        }
+
+        newBoard.getSquare(from).setPiece(null);
+        newBoard.getSquare(to).setPiece(movingPiece);
 
         // set en passant possibility
         newBoard.setEnPassantTarget(null);
-        if (movingPiece.getName() == Names.PAWN && movingPiece.getColor() == Color.WHITE && fromRow == 1 && toRow == 3) {
-            newBoard.setEnPassantTarget(NotationTranslator.getColumnLetter(fromColumn).toLowerCase() + "3");
+        if (movingPiece.getName() == Names.PAWN && movingPiece.getColor() == Color.WHITE && from.charAt(1) == '2' && to.charAt(1) == '4') {
+            newBoard.setEnPassantTarget(Character.toLowerCase(from.charAt(0)) + "3");
         }
-        if (movingPiece.getName() == Names.PAWN && movingPiece.getColor() == Color.BLACK && fromRow == 6 && toRow == 4) {
-            newBoard.setEnPassantTarget(NotationTranslator.getColumnLetter(fromColumn).toLowerCase() + "6");
+        if (movingPiece.getName() == Names.PAWN && movingPiece.getColor() == Color.BLACK && from.charAt(1) == '7' && to.charAt(1) == '5') {
+            newBoard.setEnPassantTarget(Character.toLowerCase(from.charAt(0)) + "6");
         }
 
         if (newBoard.getMovingPlayer() == Color.WHITE) {
@@ -44,5 +51,12 @@ public class Mover {
 
     public Board move(final Board board, final String from, final String to) throws CloneNotSupportedException{
         return move(board, from, to, null);
+    }
+
+    private boolean validMove(final Board board, final String from, final String to, final String promotedFigure) {
+        // check if it is valid player turn
+        // can this piece go there
+        //
+        return true;
     }
 }
