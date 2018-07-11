@@ -10,7 +10,6 @@ public class MoverTest {
     @Test
     public void move() {
         // Given
-        System.out.println("test");
         String fenStart = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         String validFenAfterMove = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1";
         Board boardStart = new Board(fenStart);
