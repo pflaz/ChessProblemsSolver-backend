@@ -204,4 +204,36 @@ public class MoverTest {
         Assert.assertTrue(possibleMovesWithPromotion.containsValue(checkingMove2N));
 
     }
+
+    @Test
+    public void getPossibleMovesOnBlackPromotion() {
+        // Given
+        String fenStart = "r4k1r/pPq1p2p/2n1b1pb/1p1p3n/5pP1/2NPBP1B/PpPQN2P/R4K1R b - - 0 1";
+        Board board = new Board(fenStart);
+        Mover mover = new Mover();
+        Move checkingMove1Q = new Move("B2A1Q", "B2", "A1", Names.QUEEN, "bxa1Q", "b2xa1Q");
+        Move checkingMove1R = new Move("B2A1R", "B2", "A1", Names.ROOK, "bxa1R", "b2xa1R");
+        Move checkingMove1B = new Move("B2A1B", "B2", "A1", Names.BISHOP, "bxa1B", "b2xa1B");
+        Move checkingMove1N = new Move("B2A1N", "B2", "A1", Names.KNIGHT, "bxa1N", "b2xa1N");
+        Move checkingMove2Q = new Move("B2B1Q", "B2", "B1", Names.QUEEN, "b1Q", "b2-b1Q");
+        Move checkingMove2R = new Move("B2B1R", "B2", "B1", Names.ROOK, "b1R", "b2-b1R");
+        Move checkingMove2B = new Move("B2B1B", "B2", "B1", Names.BISHOP, "b1B", "b2-b1B");
+        Move checkingMove2N = new Move("B2B1N", "B2", "B1", Names.KNIGHT, "b1N", "b2-b1N");
+
+        // When
+        Map<String, Move> possibleMovesWithPromotion = mover.getPossibleMoves(board);
+
+        // Then
+        Assert.assertEquals(49, possibleMovesWithPromotion.size());
+
+        Assert.assertTrue(possibleMovesWithPromotion.containsValue(checkingMove1Q));
+        Assert.assertTrue(possibleMovesWithPromotion.containsValue(checkingMove1R));
+        Assert.assertTrue(possibleMovesWithPromotion.containsValue(checkingMove1B));
+        Assert.assertTrue(possibleMovesWithPromotion.containsValue(checkingMove1N));
+        Assert.assertTrue(possibleMovesWithPromotion.containsValue(checkingMove2Q));
+        Assert.assertTrue(possibleMovesWithPromotion.containsValue(checkingMove2R));
+        Assert.assertTrue(possibleMovesWithPromotion.containsValue(checkingMove2B));
+        Assert.assertTrue(possibleMovesWithPromotion.containsValue(checkingMove2N));
+
+    }
 }
