@@ -252,29 +252,10 @@ public class Board implements Cloneable {
                     blankSquaresCount = 0;
                 }
                 if (piece != null) {
-                    switch (piece.getName()) {
-                        case KING:
-                            letter = 'K';
-                            break;
-                        case QUEEN:
-                            letter = 'Q';
-                            break;
-                        case ROOK:
-                            letter = 'R';
-                            break;
-                        case KNIGHT:
-                            letter = 'N';
-                            break;
-                        case BISHOP:
-                            letter = 'B';
-                            break;
-                        case PAWN:
-                            letter = 'P';
-                    }
                     if (piece.getColor() == Color.WHITE) {
-                        letter = Character.toUpperCase(letter);
+                        letter = Character.toUpperCase(piece.getShortcut());
                     } else {
-                        letter = Character.toLowerCase(letter);
+                        letter = Character.toLowerCase(piece.getShortcut());
                     }
                     result.append(letter);
                 } else {

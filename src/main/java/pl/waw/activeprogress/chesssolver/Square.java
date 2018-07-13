@@ -8,14 +8,12 @@ public class Square implements Cloneable {
     private final char column;
     private final int row;
     private Piece piece;
-    private final String name;
     private final Color color;
 
     public Square(char column, int row, Piece piece) {
         this.column = column;
         this.row = row;
         this.piece = piece;
-        this.name = new StringBuilder(this.column).append(this.row).toString();
         if ((column + row) % 2 == 0) {
             this.color = Color.BLACK;
         } else {
@@ -40,7 +38,7 @@ public class Square implements Cloneable {
     }
 
     public String getName() {
-        return name;
+        return new StringBuilder(this.column).append(this.row).toString();
     }
 
     public Color getColor() {
@@ -60,6 +58,24 @@ public class Square implements Cloneable {
         return newSquare;
     }
 
+    public boolean isOccupiedBy(Color color) {
+        if (getPiece() == null) {
+            return false;
+        }
+        if (getPiece().getColor() == color) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isEmpty() {
+        if (getPiece() == null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -68,13 +84,12 @@ public class Square implements Cloneable {
         return column == square.column &&
                 row == square.row &&
                 Objects.equals(piece, square.piece) &&
-                Objects.equals(name, square.name) &&
                 color == square.color;
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(column, row, piece, name, color);
+        return Objects.hash(column, row, piece, color);
     }
 }
