@@ -5,37 +5,16 @@ import pl.waw.activeprogress.chesssolver.Square;
 
 import java.util.Objects;
 
+import static pl.waw.activeprogress.chesssolver.pieces.Names.KING;
+
 public abstract class Piece implements Cloneable {
     private final Names name;
-    private final char shortcut;
     private final Color color;
-
 
     public Piece(Names name, Color color) {
         this.name = name;
         this.color = color;
-        switch (name) {
-            case KING:
-                this.shortcut = 'K';
-                break;
-            case QUEEN:
-                this.shortcut = 'Q';
-                break;
-            case ROOK:
-                this.shortcut = 'R';
-                break;
-            case BISHOP:
-                this.shortcut = 'B';
-                break;
-            case KNIGHT:
-                this.shortcut = 'N';
-                break;
-            case PAWN:
-                this.shortcut = 'P';
-                break;
-            default:
-                this.shortcut = 0;
-        }
+
     }
 
     public Names getName() {
@@ -47,7 +26,26 @@ public abstract class Piece implements Cloneable {
     }
 
     public char getShortcut() {
-        return shortcut;
+        return getShortcut(getName());
+    }
+
+    public static char getShortcut(Names pieceName) {
+        switch (pieceName) {
+            case KING:
+                return 'K';
+            case QUEEN:
+                return 'Q';
+            case ROOK:
+                return 'R';
+            case BISHOP:
+                return 'B';
+            case KNIGHT:
+                return 'N';
+            case PAWN:
+                return 'P';
+            default:
+                return 0;
+        }
     }
 
     @Override

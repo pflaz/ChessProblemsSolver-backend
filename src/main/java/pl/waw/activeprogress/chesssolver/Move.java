@@ -1,19 +1,18 @@
 package pl.waw.activeprogress.chesssolver;
 
 import pl.waw.activeprogress.chesssolver.pieces.Names;
+import pl.waw.activeprogress.chesssolver.pieces.Piece;
 
 import java.util.Objects;
 
 public class Move {
-    private String name;
-    private String from;
-    private String to;
-    private Names promotedFigure;
-    private String shortNotation;
-    private String longNotation;
+    private final String from;
+    private final String to;
+    private final Names promotedFigure;
+    private final String shortNotation;
+    private final String longNotation;
 
-    public Move(String name, String from, String to, Names promotedFigure, String shortNotation, String longNotation) {
-        this.name = name;
+    public Move(String from, String to, Names promotedFigure, String shortNotation, String longNotation) {
         this.from = from;
         this.to = to;
         this.promotedFigure = promotedFigure;
@@ -21,8 +20,16 @@ public class Move {
         this.longNotation = longNotation;
     }
 
+    public Move(String from, String to, String shortNotation, String longNotation) {
+        this(from, to, null, shortNotation, longNotation);
+    }
+
     public String getName() {
-        return name;
+        String promotedFigureSign = "";
+        if (promotedFigure != null) {
+            promotedFigureSign = Character.toString(Piece.getShortcut(promotedFigure));
+        }
+        return new StringBuilder(from).append(to).append(promotedFigureSign).toString().toUpperCase();
     }
 
     public String getFrom() {
@@ -50,8 +57,7 @@ public class Move {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Move move = (Move) o;
-        return Objects.equals(name, move.name) &&
-                Objects.equals(from, move.from) &&
+        return  Objects.equals(from, move.from) &&
                 Objects.equals(to, move.to) &&
                 promotedFigure == move.promotedFigure &&
                 Objects.equals(shortNotation, move.shortNotation) &&
@@ -61,6 +67,6 @@ public class Move {
     @Override
     public int hashCode() {
 
-        return Objects.hash(name, from, to, promotedFigure, shortNotation, longNotation);
+        return Objects.hash(from, to, promotedFigure, shortNotation, longNotation);
     }
 }
