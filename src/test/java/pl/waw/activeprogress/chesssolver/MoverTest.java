@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import pl.waw.activeprogress.chesssolver.pieces.Names;
 
+import java.security.InvalidParameterException;
 import java.util.Map;
 
 public class MoverTest {
@@ -20,7 +21,7 @@ public class MoverTest {
         Board boardAfterMove = null;
         try {
             boardAfterMove = mover.move(boardStart, "E2", "E4");
-        } catch (CloneNotSupportedException e) {
+        } catch (InvalidParameterException e) {
             System.err.println(e.getMessage());
         }
         String fenAfterMove = boardAfterMove.getFen();
@@ -111,6 +112,36 @@ public class MoverTest {
         Assert.assertEquals(24, possibleMovesWithoutCastling.size());
         Assert.assertTrue(possibleMovesWithCastling.containsValue(checkingMove));
         Assert.assertFalse(possibleMovesWithoutCastling.containsValue(checkingMove));
+    }
+
+    @Test
+    public void getPossibleMovesOnWhiteKingsideCastlingWhenIsCheck() {
+        // Given
+        String fenStart = "rnbqk2r/pp2p2p/6p1/2ppP3/1b3pP1/2Pn3B/PP2NP1P/RNBQK2R w KQkq - 0 1";
+        Board board = new Board(fenStart);
+        Mover mover = new Mover();
+        Move checkingMove = new Move("E1", "G1", "0-0", "0-0");
+
+        // When
+        Map<String, Move> possibleMoves = mover.getPossibleMoves(board);
+        // Then
+        Assert.assertEquals(28, possibleMoves.size());
+        Assert.assertFalse(possibleMoves.containsValue(checkingMove));
+    }
+
+    @Test
+    public void getPossibleMovesOnWhiteKingsideCastlingWhenIsCheckBetweenFromAndToSquares() {
+        // Given
+        String fenStart = "rnbqk2r/pp2p2p/3n2p1/2ppP3/5pP1/4N2b/PPP2P1P/RNBQK2R w KQkq - 0 1";
+        Board board = new Board(fenStart);
+        Mover mover = new Mover();
+        Move checkingMove = new Move("E1", "G1", "0-0", "0-0");
+
+        // When
+        Map<String, Move> possibleMoves = mover.getPossibleMoves(board);
+        // Then
+        Assert.assertEquals(30, possibleMoves.size()); // E1F1 is marked as possible because it is removed on getCorrectMoves
+        Assert.assertFalse(possibleMoves.containsValue(checkingMove));
     }
 
     @Test
@@ -235,4 +266,51 @@ public class MoverTest {
         Assert.assertTrue(possibleMovesWithPromotion.containsValue(checkingMove2B));
         Assert.assertTrue(possibleMovesWithPromotion.containsValue(checkingMove2N));
     }
+
+    @Test
+    public void getCorrectMoves() {
+        // Given
+        String fenStart = "rnbqk2r/pp2p2p/2pn2p1/4P3/B4pP1/1Q2N3/PPP2P1P/RN2K2R b KQkq - 0 1";
+        Board board = new Board(fenStart);
+        Mover mover = new Mover();
+        Move checkingMove = new Move("E8", "G8", "0-0", "0-0");
+        Move checkingMove2 = new Move("E8", "F7", "Kf7", "Ke8-f7");
+        Move checkingMove3 = new Move("C6", "C5", "c5", "c6-c5");
+
+        // When
+        Map<String, Move> correctMoves = mover.getCorrectMoves(board);
+        // Then
+        Assert.assertEquals(29, correctMoves.size());
+        Assert.assertFalse(correctMoves.containsValue(checkingMove));
+        Assert.assertFalse(correctMoves.containsValue(checkingMove2));
+        Assert.assertFalse(correctMoves.containsValue(checkingMove3));
+    }
+
+    @Test
+    public void testIsCheck() {
+        // Given
+        String[] fens = {
+                "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", // F
+                "rnbqkbnr/ppp3pp/8/4pp2/2B1P2N/3p4/PPPPKPPP/RNBQ3R w kq - 0 6", // T
+                "rnb1kbnr/pppp1ppp/5q2/3p4/8/3P1K2/PPPP1PPP/RNBQ1BNR w KQkq - 0 1", // T
+                "rnb1kbnr/pppp1ppp/5q2/3p4/8/3P1K2/PPPP1PPP/RNBQ1BNR b KQkq - 0 1", // F
+                "rnb1kbnr/pppp1ppp/5q2/3p4/8/1K1P4/PPPP1PPP/RNB1Q1NR b KQkq - 0 1", // T
+                "rnb1kbnr/ppp2ppp/3p1q2/3p4/B7/1K1P4/PPPP1PPP/RN1Q2NR b KQkq - 0 1", // T
+                "rnb1kbnr/ppp2ppp/1q1p4/1B1p4/8/1K1P4/PPPP1PPP/RN1Q2NR b kq - 0 1" // T
+        };
+
+        boolean[] correctResults = {false, true, true, false, true, true, true};
+
+        Mover mover = new Mover();
+
+        // When
+        boolean[] results = new boolean[fens.length];
+        for (int i = 0; i < fens.length; i++) {
+            results[i] = mover.isCheck(new Board(fens[i]));
+        }
+
+        // Then
+        Assert.assertArrayEquals(correctResults, results);
+    }
+
 }

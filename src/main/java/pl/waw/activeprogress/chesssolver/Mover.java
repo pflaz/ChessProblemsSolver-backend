@@ -23,7 +23,33 @@ public class Mover {
         return new StringBuilder(Character.toString(toColumn)).append(Character.toString(toRow)).toString();
     }
 
-    public Map<String, Move> getPossibleMoves(final Board board) {
+    public Map<String, Move> getCorrectMoves(final Board board) {
+        // returns possible moves and checks if after these moves there is no check
+        Map<String, Move> result = new HashMap<>();
+        Map<String, Move> possibleMoves = getPossibleMoves(board);
+        for (Map.Entry<String, Move> theMove: possibleMoves.entrySet()) {
+            Board newBoard;
+            try {
+                newBoard = board.copy();
+            } catch (CloneNotSupportedException e) {
+                return result;
+            }
+            String from = theMove.getValue().getFrom();
+            String to = theMove.getValue().getTo();
+            Piece movingPiece = newBoard.getSquare(from).getPiece();
+            newBoard.getSquare(from).setPiece(null);
+            newBoard.getSquare(to).setPiece(movingPiece);
+
+            if (isCheck(newBoard)) {
+                continue;
+            }
+            result.put(theMove.getKey(), theMove.getValue());
+        }
+        return result;
+    }
+
+    public Map<String, Move> getPossibleMoves(final Board board, boolean ignoreCastlingsAndEnPassant) {
+        // ignoreCastlingsAndEnPassant parameter - don't verify castlings end en passant - using in isCheck method
         Map<String, Move> result = new HashMap<>();
 
         board.getSquares().forEach((squareName, square) -> {
@@ -44,11 +70,13 @@ public class Mover {
                     result.putAll(checkMovesInDirection(board, piece, from, Direction.LEFT_DOWN));
                     result.putAll(checkMovesInDirection(board, piece, from, Direction.LEFT_UP));
 
-                    to = getModifiedSquareName(from, 2, 0);
-                    result.putAll(checkCastling(board, piece, from, to));
-                    to = getModifiedSquareName(from, -2, 0);
-                    result.putAll(checkCastling(board, piece, from, to));
-                    break;
+                    if (!ignoreCastlingsAndEnPassant) {
+                        to = getModifiedSquareName(from, 2, 0);
+                        result.putAll(checkCastling(board, piece, from, to));
+                        to = getModifiedSquareName(from, -2, 0);
+                        result.putAll(checkCastling(board, piece, from, to));
+                        break;
+                    }
 
                 case QUEEN:
                     result.putAll(checkMovesInDirection(board, piece, from, Direction.RIGHT));
@@ -113,14 +141,16 @@ public class Mover {
                         result.putAll(checkMovePossibilityForPawn(board, piece, from, to));
 
                         // en passant
-                        if (from.charAt(1)== '5' && board.getEnPassantTarget() != null) {
-                            to = getModifiedSquareName(from, -1, 1);
-                            if (to.toLowerCase().equals(board.getEnPassantTarget())) {
-                                result.putAll(checkMovePossibilityForPawn(board, piece, from, to, true));
-                            }
-                            to = getModifiedSquareName(from, 1, 1);
-                            if (to.toLowerCase().equals(board.getEnPassantTarget())) {
-                                result.putAll(checkMovePossibilityForPawn(board, piece, from, to, true));
+                        if (!ignoreCastlingsAndEnPassant) {
+                            if (from.charAt(1) == '5' && board.getEnPassantTarget() != null) {
+                                to = getModifiedSquareName(from, -1, 1);
+                                if (to.toLowerCase().equals(board.getEnPassantTarget())) {
+                                    result.putAll(checkMovePossibilityForPawn(board, piece, from, to, true));
+                                }
+                                to = getModifiedSquareName(from, 1, 1);
+                                if (to.toLowerCase().equals(board.getEnPassantTarget())) {
+                                    result.putAll(checkMovePossibilityForPawn(board, piece, from, to, true));
+                                }
                             }
                         }
                     }
@@ -142,14 +172,16 @@ public class Mover {
                         result.putAll(checkMovePossibilityForPawn(board, piece, from, to));
 
                         // en passant
-                        if (from.charAt(1)== '4' && board.getEnPassantTarget() != null) {
-                            to = getModifiedSquareName(from, -1, -1);
-                            if (to.toLowerCase().equals(board.getEnPassantTarget())) {
-                                result.putAll(checkMovePossibilityForPawn(board, piece, from, to, true));
-                            }
-                            to = getModifiedSquareName(from, 1, -1);
-                            if (to.toLowerCase().equals(board.getEnPassantTarget())) {
-                                result.putAll(checkMovePossibilityForPawn(board, piece, from, to, true));
+                        if (!ignoreCastlingsAndEnPassant) {
+                            if (from.charAt(1) == '4' && board.getEnPassantTarget() != null) {
+                                to = getModifiedSquareName(from, -1, -1);
+                                if (to.toLowerCase().equals(board.getEnPassantTarget())) {
+                                    result.putAll(checkMovePossibilityForPawn(board, piece, from, to, true));
+                                }
+                                to = getModifiedSquareName(from, 1, -1);
+                                if (to.toLowerCase().equals(board.getEnPassantTarget())) {
+                                    result.putAll(checkMovePossibilityForPawn(board, piece, from, to, true));
+                                }
                             }
                         }
                     }
@@ -160,13 +192,41 @@ public class Mover {
         return result;
     }
 
+    public Map<String, Move> getPossibleMoves(final Board board) {
+        return getPossibleMoves(board, false);
+    }
+
     public Map<String, Move> checkCastling(Board board, Piece piece, String from, String to) {
         Map<String, Move> result = new HashMap<>();
         if (from.charAt(0) != 'E') return result;
         if (to.charAt(0) != 'G' && to.charAt(0) != 'C') {
             return result;
         }
-        // TODO if check
+        if (isCheck(board)) {
+            return result;
+        }
+
+        String squareBetweenFromAndTo = null;
+        if (to.charAt(0) == 'G') {
+            squareBetweenFromAndTo = "F" + from.charAt(1);
+        }
+        if (to.charAt(0) == 'C') {
+            squareBetweenFromAndTo = "D" + from.charAt(1);
+        }
+
+        try { // moving King to the square between 'from' and 'to' without checking environment (ie. without getting all possible moves - cause stack overflow)
+            Board newBoard = board.copy();
+            newBoard.getSquare(from).setPiece(null);
+            newBoard.getSquare(squareBetweenFromAndTo).setPiece(piece);
+
+            if (isCheck(newBoard)) {
+                return result;
+            }
+
+        } catch (CloneNotSupportedException e) {
+            throw new InvalidParameterException("Invalid board - there is no possibility to clone.");
+        }
+
         if (piece.getColor() == Color.WHITE) {
             if (from.charAt(1) != '1' || to.charAt(1) != '1') {
                 return result;
@@ -345,17 +405,60 @@ public class Mover {
         return result;
     }
 
-    public Board move(final Board board, String from, String to, Names promotedFigure) throws CloneNotSupportedException {
+    public boolean isCheck(final Board board) {
+        Board boardWithOppositePlayerMoving;
+        try {
+            boardWithOppositePlayerMoving = board.copy();
+        } catch (CloneNotSupportedException e) {
+            return false;
+        }
+        if (boardWithOppositePlayerMoving.getMovingPlayer() == Color.WHITE) {
+            boardWithOppositePlayerMoving.setMovingPlayer(Color.BLACK);
+        } else {
+            boardWithOppositePlayerMoving.setMovingPlayer(Color.WHITE);
+        }
+        Map<String, Move> possibleMoves = getPossibleMoves(boardWithOppositePlayerMoving, true); // don't get castlings end en passant - it is impossible to capture King by castling or en passant and checking it in this place would cause stachoverflow error (isCheck -> getPossibleMoves -> isCheck...)
+        for (Map.Entry<String, Move> thePossibleMove: possibleMoves.entrySet()) {
+            String toSquare = thePossibleMove.getValue().getTo();
+            Piece pieceOnToSquare = boardWithOppositePlayerMoving.getSquare(toSquare).getPiece();
+            if (pieceOnToSquare == null) continue;
+            if (pieceOnToSquare.getName() == Names.KING && pieceOnToSquare.getColor() != boardWithOppositePlayerMoving.getMovingPlayer()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isCheckmate(final Board board) {
+        if (!isCheck(board)) return false;
+
+        Map<String, Move> possibleMoves = getPossibleMoves(board);
+        for (Map.Entry<String, Move> thePossibleMove: possibleMoves.entrySet()) {
+
+        }
+
+        return false;
+    }
+
+    public Board move(final Board board, String from, String to, final Names promotedFigure) {
         from = from.toUpperCase();
         to = to.toUpperCase();
+        Board newBoard;
 
-        Board newBoard = board.copy();
+        try {
+            newBoard = board.copy();
+        } catch (CloneNotSupportedException e) {
+            throw new InvalidParameterException("Invalid 'board' parameter - there is no possibility to do 'move' on that board.");
+        }
 
         if (from.charAt(0) < 'A' || from.charAt(0) > 'H' || to.charAt(0) < 'A' || to.charAt(0) > 'H' || from.charAt(1) < '1' || from.charAt(1) > '8' || to.charAt(1) < '1' || to.charAt(1) > '8') {
             throw new InvalidParameterException("Invalid 'from' or 'to' parameter - should be from 'A1' to 'H8'");
         }
 
         Piece movingPiece = newBoard.getSquare(from).getPiece();
+        if (movingPiece == null) {
+            throw new InvalidParameterException("There is no piece on 'from' square");
+        }
 
         if (!validMove(board, from, to, promotedFigure)) {
             throw new InvalidParameterException("Invalid move");
@@ -379,23 +482,24 @@ public class Mover {
             newBoard.setMovingPlayer(Color.WHITE);
             newBoard.setFullmoveNumber(newBoard.getFullmoveNumber() + 1);
         }
-
         return newBoard;
-
     }
 
-    public Board move(final Board board, final String from, final String to) throws CloneNotSupportedException{
+
+    public Board move(final Board board, final String from, final String to) {
         return move(board, from, to, null);
     }
 
     private boolean validMove(final Board board, final String from, final String to, final Names promotedFigure) {
 
-        Move move = null; // TODO
-        Map<String, Move> possibleMoves = getPossibleMoves(board);
-       /* if (!possibleMoves.containsValue(move))
+        String moveNameToCheck = new StringBuilder(from).append(to).append(promotedFigure == null ? "" : promotedFigure).toString().toUpperCase();
+        // verication of moves' names only (not all Move object) because for correct verification with Move object we have to put notation of move (en passant including)
+        // this is no needed to verify Move object - name only is enough
+        Map<String, Move> correctMoves = getCorrectMoves(board);
+        if (!correctMoves.containsKey(moveNameToCheck))
         {
             return false;
-        }*/
+        }
         return true;
     }
 
