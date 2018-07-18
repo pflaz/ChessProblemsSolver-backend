@@ -198,8 +198,16 @@ public class Board implements Cloneable {
         return movingPlayer;
     }
 
-    public void setMovingPlayer(Color movingPlayer) {
+    private void setMovingPlayer(Color movingPlayer) {
         this.movingPlayer = movingPlayer;
+    }
+
+    public void switchMovingPlayer() {
+        if (getMovingPlayer() == Color.WHITE) {
+            setMovingPlayer(Color.BLACK);
+        } else {
+            setMovingPlayer(Color.WHITE);
+        }
     }
 
     public boolean isWhiteKingsideCastlingPossible() {

@@ -412,11 +412,8 @@ public class Mover {
         } catch (CloneNotSupportedException e) {
             return false;
         }
-        if (boardWithOppositePlayerMoving.getMovingPlayer() == Color.WHITE) {
-            boardWithOppositePlayerMoving.setMovingPlayer(Color.BLACK);
-        } else {
-            boardWithOppositePlayerMoving.setMovingPlayer(Color.WHITE);
-        }
+        boardWithOppositePlayerMoving.switchMovingPlayer();
+
         Map<String, Move> possibleMoves = getPossibleMoves(boardWithOppositePlayerMoving, true); // don't get castlings end en passant - it is impossible to capture King by castling or en passant and checking it in this place would cause stachoverflow error (isCheck -> getPossibleMoves -> isCheck...)
         for (Map.Entry<String, Move> thePossibleMove: possibleMoves.entrySet()) {
             String toSquare = thePossibleMove.getValue().getTo();
@@ -432,11 +429,10 @@ public class Mover {
     public boolean isCheckmate(final Board board) {
         if (!isCheck(board)) return false;
 
-        Map<String, Move> possibleMoves = getPossibleMoves(board);
-        for (Map.Entry<String, Move> thePossibleMove: possibleMoves.entrySet()) {
-
+        Map<String, Move> correctMoves = getCorrectMoves(board);
+        if (correctMoves.size() == 0) {
+            return true;
         }
-
         return false;
     }
 
@@ -476,12 +472,7 @@ public class Mover {
             newBoard.setEnPassantTarget(Character.toLowerCase(from.charAt(0)) + "6");
         }
 
-        if (newBoard.getMovingPlayer() == Color.WHITE) {
-            newBoard.setMovingPlayer(Color.BLACK);
-        } else {
-            newBoard.setMovingPlayer(Color.WHITE);
-            newBoard.setFullmoveNumber(newBoard.getFullmoveNumber() + 1);
-        }
+        newBoard.switchMovingPlayer();
         return newBoard;
     }
 

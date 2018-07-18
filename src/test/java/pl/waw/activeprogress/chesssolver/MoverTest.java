@@ -313,4 +313,32 @@ public class MoverTest {
         Assert.assertArrayEquals(correctResults, results);
     }
 
+    @Test
+    public void testIsCheckmate() {
+        // Given
+        String[] fens = {
+                "rnbqk2r/pp2p2p/3n2p1/1Qp1P3/B4pP1/4N3/PPP2P1P/RN2K2R b KQkq - 0 1", // F
+                "rnbqkr2/pp2p2p/3n2p1/1Qp1P3/5pP1/1B2N3/PPP2P1P/RN2K2R b KQkq - 0 1", // F
+                "3rkr2/p2pp2p/3N2p1/1Qp1P3/5pP1/1B6/PPP2P1P/RN2K2R b KQkq - 0 1", // F
+                "3rkr2/p2pp2p/3N2p1/2p1Q3/5pP1/1B6/PPP2P1P/RN2K2R b KQkq - 0 1 ", // T
+                "4kr2/p2pp2p/2N3p1/2p1Q3/5pP1/1B2r3/PPP2P1P/RN2K2R w KQkq - 0 1", // F
+                "4k3/p2pp2p/2N3p1/2p1Q3/5pP1/1B3P2/PPr4P/R2r1K1R w KQkq - 0 1", // F
+                "4k3/p2pp2p/2N2p1q/2p5/4QpPK/1B3P2/PPr4P/R2r3R w KQkq - 0 1", // T
+                "4k3/p2pp2p/2N3p1/2p5/5pP1/1B3P2/PPr4P/3r1K1R w KQ - 0 1" // T
+        };
+
+        boolean[] correctResults = {false, false, false, true, false, false, true, true};
+
+        Mover mover = new Mover();
+
+        // When
+        boolean[] results = new boolean[fens.length];
+        for (int i = 0; i < fens.length; i++) {
+            results[i] = mover.isCheckmate(new Board(fens[i]));
+        }
+
+        // Then
+        Assert.assertArrayEquals(correctResults, results);
+    }
+
 }
