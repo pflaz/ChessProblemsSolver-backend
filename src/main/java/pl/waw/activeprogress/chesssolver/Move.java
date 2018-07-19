@@ -32,6 +32,11 @@ public class Move {
         return new StringBuilder(from).append(to).append(promotedFigureSign).toString().toUpperCase();
     }
 
+    @Override
+    public String toString() {
+        return getName();
+    }
+
     public String getFrom() {
         return from;
     }

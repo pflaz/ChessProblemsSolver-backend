@@ -10,10 +10,10 @@ import java.util.Objects;
 public class Board implements Cloneable {
     private Map<String, Square> squares;
     private Color movingPlayer;
-    private final boolean whiteKingsideCastlingPossible;
-    private final boolean whiteQueensideCastlingPossible;
-    private final boolean blackKingsideCastlingPossible;
-    private final boolean blackQueensideCastlingPossible;
+    private boolean whiteKingsideCastlingPossible;
+    private boolean whiteQueensideCastlingPossible;
+    private boolean blackKingsideCastlingPossible;
+    private boolean blackQueensideCastlingPossible;
     private String enPassantTarget;
     private final int halfmoveClock; // halfmoves since the last capture or pawn advance
     private int fullmoveNumber;
@@ -338,6 +338,24 @@ public class Board implements Cloneable {
         System.out.println("  | A | B | C | D | E | F | G | H |");
     }
 
+    public void setWhiteKingsideCastlingPossible(boolean whiteKingsideCastlingPossible) {
+        this.whiteKingsideCastlingPossible = whiteKingsideCastlingPossible;
+    }
+
+    public void setWhiteQueensideCastlingPossible(boolean whiteQueensideCastlingPossible) {
+        this.whiteQueensideCastlingPossible = whiteQueensideCastlingPossible;
+    }
+
+    public void setBlackKingsideCastlingPossible(boolean blackKingsideCastlingPossible) {
+        this.blackKingsideCastlingPossible = blackKingsideCastlingPossible;
+    }
+
+    public void setBlackQueensideCastlingPossible(boolean blackQueensideCastlingPossible) {
+        this.blackQueensideCastlingPossible = blackQueensideCastlingPossible;
+    }
+
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -358,6 +376,11 @@ public class Board implements Cloneable {
     public int hashCode() {
 
         return Objects.hash(squares, movingPlayer, whiteKingsideCastlingPossible, whiteQueensideCastlingPossible, blackKingsideCastlingPossible, blackQueensideCastlingPossible, enPassantTarget, halfmoveClock, fullmoveNumber);
+    }
+
+    @Override
+    public String toString() {
+        return getFen();
     }
 }
 

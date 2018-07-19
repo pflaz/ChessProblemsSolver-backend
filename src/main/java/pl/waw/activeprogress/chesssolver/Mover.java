@@ -1,8 +1,6 @@
 package pl.waw.activeprogress.chesssolver;
 
-import pl.waw.activeprogress.chesssolver.pieces.Names;
-import pl.waw.activeprogress.chesssolver.pieces.Piece;
-import pl.waw.activeprogress.chesssolver.pieces.Rook;
+import pl.waw.activeprogress.chesssolver.pieces.*;
 
 import java.security.InvalidParameterException;
 import java.util.HashMap;
@@ -39,6 +37,24 @@ public class Mover {
             Piece movingPiece = newBoard.getSquare(from).getPiece();
             newBoard.getSquare(from).setPiece(null);
             newBoard.getSquare(to).setPiece(movingPiece);
+            if (theMove.getValue().getPromotedFigure() != null) {
+                Piece newPiece = null;
+                switch (theMove.getValue().getPromotedFigure()) {
+                    case QUEEN:
+                        newPiece = new Queen(newBoard.getMovingPlayer());
+                        break;
+                    case ROOK:
+                        newPiece = new Rook(newBoard.getMovingPlayer());
+                        break;
+                    case BISHOP:
+                        newPiece = new Bishop(newBoard.getMovingPlayer());
+                        break;
+                    case KNIGHT:
+                        newPiece = new Knight(newBoard.getMovingPlayer());
+                        break;
+                }
+                newBoard.getSquare(to).setPiece(newPiece);
+            }
 
             if (isCheck(newBoard)) {
                 continue;
@@ -232,12 +248,17 @@ public class Mover {
                 return result;
             }
             if (to.charAt(0) == 'G') {
-                if (!board.isWhiteKingsideCastlingPossible() || !board.getSquare("H1").getPiece().equals(new Rook(Color.WHITE)) || !board.getSquare("F1").isEmpty() || !board.getSquare("G1").isEmpty()) {
+                if (board.getSquare("H1").getPiece() == null) return result;
+                if (!board.isWhiteKingsideCastlingPossible() ||
+                        !board.getSquare("H1").getPiece().equals(new Rook(Color.WHITE)) ||
+                        !board.getSquare("F1").isEmpty() ||
+                        !board.getSquare("G1").isEmpty()) {
                     return result;
                 }
                 result.put(from + to, new Move(from, to, NotationGenerator.getShortNotation(board, from, to), NotationGenerator.getLongNotation(board, from, to)));
             }
             if (to.charAt(0) == 'C') {
+                if (board.getSquare("A1").getPiece() == null) return result;
                 if (!board.isWhiteQueensideCastlingPossible() || !board.getSquare("A1").getPiece().equals(new Rook(Color.WHITE)) || !board.getSquare("D1").isEmpty() || !board.getSquare("C1").isEmpty() || !board.getSquare("B1").isEmpty()) {
                     return result;
                 }
@@ -249,12 +270,14 @@ public class Mover {
                 return result;
             }
             if (to.charAt(0) == 'G') {
+                if (board.getSquare("H8").getPiece() == null) return result;
                 if (!board.isBlackKingsideCastlingPossible() || !board.getSquare("H8").getPiece().equals(new Rook(Color.BLACK)) || !board.getSquare("F8").isEmpty() || !board.getSquare("G8").isEmpty()) {
                     return result;
                 }
                 result.put(from + to, new Move(from, to,NotationGenerator.getShortNotation(board, from, to), NotationGenerator.getLongNotation(board, from, to)));
             }
             if (to.charAt(0) == 'C') {
+                if (board.getSquare("A8").getPiece() == null) return result;
                 if (!board.isBlackQueensideCastlingPossible() || !board.getSquare("A8").getPiece().equals(new Rook(Color.BLACK)) || !board.getSquare("D8").isEmpty() || !board.getSquare("C8").isEmpty() || !board.getSquare("B8").isEmpty()) {
                     return result;
                 }
@@ -463,6 +486,25 @@ public class Mover {
         newBoard.getSquare(from).setPiece(null);
         newBoard.getSquare(to).setPiece(movingPiece);
 
+        if (promotedFigure != null) {
+            Piece newPiece = null;
+            switch (promotedFigure) {
+                case QUEEN:
+                    newPiece = new Queen(newBoard.getMovingPlayer());
+                    break;
+                case ROOK:
+                    newPiece = new Rook(newBoard.getMovingPlayer());
+                    break;
+                case BISHOP:
+                    newPiece = new Bishop(newBoard.getMovingPlayer());
+                    break;
+                case KNIGHT:
+                    newPiece = new Knight(newBoard.getMovingPlayer());
+                    break;
+            }
+            newBoard.getSquare(to).setPiece(newPiece);
+        }
+
         // set en passant possibility
         newBoard.setEnPassantTarget(null);
         if (movingPiece.getName() == Names.PAWN && movingPiece.getColor() == Color.WHITE && from.charAt(1) == '2' && to.charAt(1) == '4') {
@@ -470,6 +512,33 @@ public class Mover {
         }
         if (movingPiece.getName() == Names.PAWN && movingPiece.getColor() == Color.BLACK && from.charAt(1) == '7' && to.charAt(1) == '5') {
             newBoard.setEnPassantTarget(Character.toLowerCase(from.charAt(0)) + "6");
+        }
+
+        // set castlings possibility
+        if (movingPiece.getName() == Names.KING && movingPiece.getColor() == Color.WHITE) {
+            newBoard.setWhiteKingsideCastlingPossible(false);
+            newBoard.setWhiteQueensideCastlingPossible(false);
+        }
+        if (movingPiece.getName() == Names.KING && movingPiece.getColor() == Color.BLACK) {
+            newBoard.setBlackKingsideCastlingPossible(false);
+            newBoard.setBlackQueensideCastlingPossible(false);
+        }
+        if (newBoard.isWhiteQueensideCastlingPossible() && movingPiece.getColor() == Color.WHITE && movingPiece.getName() == Names.ROOK && from.equals("A1")) {
+            newBoard.setWhiteQueensideCastlingPossible(false);
+        }
+        if (newBoard.isWhiteKingsideCastlingPossible() && movingPiece.getColor() == Color.WHITE && movingPiece.getName() == Names.ROOK && from.equals("H1")) {
+            newBoard.setWhiteKingsideCastlingPossible(false);
+        }
+        if (newBoard.isBlackQueensideCastlingPossible() && movingPiece.getColor() == Color.BLACK && movingPiece.getName() == Names.ROOK && from.equals("A8")) {
+            newBoard.setBlackQueensideCastlingPossible(false);
+        }
+        if (newBoard.isBlackKingsideCastlingPossible() && movingPiece.getColor() == Color.BLACK && movingPiece.getName() == Names.ROOK && from.equals("H8")) {
+            newBoard.setBlackKingsideCastlingPossible(false);
+        }
+
+        // set fullMoveNumber
+        if (newBoard.getMovingPlayer() == Color.BLACK) {
+            newBoard.setFullmoveNumber(newBoard.getFullmoveNumber() + 1);
         }
 
         newBoard.switchMovingPlayer();
@@ -483,7 +552,7 @@ public class Mover {
 
     private boolean validMove(final Board board, final String from, final String to, final Names promotedFigure) {
 
-        String moveNameToCheck = new StringBuilder(from).append(to).append(promotedFigure == null ? "" : promotedFigure).toString().toUpperCase();
+        String moveNameToCheck = new StringBuilder(from).append(to).append(promotedFigure == null ? "" : Piece.getShortcut(promotedFigure)).toString().toUpperCase();
         // verication of moves' names only (not all Move object) because for correct verification with Move object we have to put notation of move (en passant including)
         // this is no needed to verify Move object - name only is enough
         Map<String, Move> correctMoves = getCorrectMoves(board);
