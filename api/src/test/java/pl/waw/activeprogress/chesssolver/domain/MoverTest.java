@@ -1,8 +1,8 @@
-package pl.waw.activeprogress.chesssolver;
+package pl.waw.activeprogress.chesssolver.domain;
 
 import org.junit.Assert;
 import org.junit.Test;
-import pl.waw.activeprogress.chesssolver.pieces.Names;
+import pl.waw.activeprogress.chesssolver.domain.pieces.Names;
 
 import java.security.InvalidParameterException;
 import java.util.Map;

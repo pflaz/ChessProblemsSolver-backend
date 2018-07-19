@@ -1,6 +1,6 @@
-package pl.waw.activeprogress.chesssolver;
+package pl.waw.activeprogress.chesssolver.domain;
 
-import pl.waw.activeprogress.chesssolver.pieces.*;
+import pl.waw.activeprogress.chesssolver.domain.pieces.*;
 
 import java.security.InvalidParameterException;
 import java.util.HashMap;

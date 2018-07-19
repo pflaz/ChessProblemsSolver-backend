@@ -1,6 +1,6 @@
-package pl.waw.activeprogress.chesssolver.pieces;
+package pl.waw.activeprogress.chesssolver.domain.pieces;
 
-import pl.waw.activeprogress.chesssolver.Color;
+import pl.waw.activeprogress.chesssolver.domain.Color;
 
 public class Bishop extends Piece {
     public Bishop(Color color) {

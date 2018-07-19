@@ -1,10 +1,12 @@
-package pl.waw.activeprogress.chesssolver;
+package pl.waw.activeprogress.chesssolver.service;
+
+import pl.waw.activeprogress.chesssolver.domain.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class Solver {
+public class SolverService {
 
     public List<MoveWithBoard> getSolutionsForCheckmate(final Board board, final int movesCount) {
 

@@ -1,6 +1,6 @@
-package pl.waw.activeprogress.chesssolver;
+package pl.waw.activeprogress.chesssolver.domain;
 
-import pl.waw.activeprogress.chesssolver.pieces.Piece;
+import pl.waw.activeprogress.chesssolver.domain.pieces.Piece;
 
 import java.util.Map;
 

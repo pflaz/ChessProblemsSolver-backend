@@ -1,9 +1,7 @@
-package pl.waw.activeprogress.chesssolver;
+package pl.waw.activeprogress.chesssolver.domain;
 
 import org.junit.Assert;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class PositionVerificatorTest {
 

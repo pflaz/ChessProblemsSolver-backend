@@ -1,4 +1,4 @@
-package pl.waw.activeprogress.chesssolver;
+package pl.waw.activeprogress.chesssolver.domain;
 
 import java.util.ArrayList;
 import java.util.List;

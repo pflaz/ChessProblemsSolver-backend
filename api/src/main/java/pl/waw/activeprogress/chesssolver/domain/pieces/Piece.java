@@ -1,11 +1,8 @@
-package pl.waw.activeprogress.chesssolver.pieces;
+package pl.waw.activeprogress.chesssolver.domain.pieces;
 
-import pl.waw.activeprogress.chesssolver.Color;
-import pl.waw.activeprogress.chesssolver.Square;
+import pl.waw.activeprogress.chesssolver.domain.Color;
 
 import java.util.Objects;
-
-import static pl.waw.activeprogress.chesssolver.pieces.Names.KING;
 
 public abstract class Piece implements Cloneable {
     private final Names name;

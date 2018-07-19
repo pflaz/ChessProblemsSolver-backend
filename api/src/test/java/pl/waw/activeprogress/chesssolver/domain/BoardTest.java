@@ -1,8 +1,8 @@
-package pl.waw.activeprogress.chesssolver;
+package pl.waw.activeprogress.chesssolver.domain;
 
 import org.junit.Assert;
 import org.junit.Test;
-import pl.waw.activeprogress.chesssolver.pieces.*;
+import pl.waw.activeprogress.chesssolver.domain.pieces.*;
 
 import java.util.HashMap;
 import java.util.Map;

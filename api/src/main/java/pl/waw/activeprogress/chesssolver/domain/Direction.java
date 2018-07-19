@@ -1,4 +1,4 @@
-package pl.waw.activeprogress.chesssolver;
+package pl.waw.activeprogress.chesssolver.domain;
 
 public enum Direction {
     RIGHT_UP,

@@ -1,4 +1,4 @@
-package pl.waw.activeprogress.chesssolver.pieces;
+package pl.waw.activeprogress.chesssolver.domain.pieces;
 
 public enum Names {
     KING,
