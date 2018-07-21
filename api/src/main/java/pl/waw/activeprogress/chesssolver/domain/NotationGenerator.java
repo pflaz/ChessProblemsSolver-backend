@@ -8,6 +8,7 @@ public class NotationGenerator {
     public static String getShortNotation(Board board, String from, String to, Names promotedFigure, boolean enPassant) {
         StringBuilder resultBuilder = new StringBuilder();
         Piece piece = board.getSquare(from).getPiece();
+        Mover mover = new Mover();
 
         String promotedFigureSign = "";
         if (promotedFigure != null) {
@@ -44,8 +45,7 @@ public class NotationGenerator {
                 resultBuilder
                         .append(piece.getShortcut())
                         .append(shortMoveSign)
-                        .append(to.toLowerCase())
-                        .toString();
+                        .append(to.toLowerCase());
                 break;
             case PAWN:
                 String shortNotationBegin = "";
@@ -66,8 +66,8 @@ public class NotationGenerator {
                         .append(promotedFigureSign);
                 break;
         }
+//        check and checkmate
 
-// TODO check
         return resultBuilder.toString();
     }
 
@@ -76,7 +76,7 @@ public class NotationGenerator {
     }
 
     public static String getShortNotation(Board board, String from, String to, boolean enPassant) {
-        return getShortNotation(board, from, to, null, true);
+        return getShortNotation(board, from, to, null, enPassant);
     }
 
     public static String getShortNotation(Board board, String from, String to, Names promotedFigure) {
@@ -153,7 +153,7 @@ public class NotationGenerator {
     }
 
     public static String getLongNotation(Board board, String from, String to, boolean enPassant) {
-        return getLongNotation(board, from, to, null, true);
+        return getLongNotation(board, from, to, null, enPassant);
     }
 
     public static String getLongNotation(Board board, String from, String to, Names promotedFigure) {

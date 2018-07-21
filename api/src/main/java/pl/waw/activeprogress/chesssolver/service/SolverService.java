@@ -1,15 +1,21 @@
 package pl.waw.activeprogress.chesssolver.service;
 
+import org.springframework.stereotype.Service;
 import pl.waw.activeprogress.chesssolver.domain.*;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Service
 public class SolverService {
 
     public List<MoveWithBoard> getSolutionsForCheckmate(final Board board, final int movesCount) {
 
+        if (movesCount <= 0) {
+            throw new InvalidParameterException("Moves should be more than 0.");
+        }
         List<MoveWithBoard> result = new ArrayList<>();
 
         PositionVerificator positionVerificator = new PositionVerificator();
