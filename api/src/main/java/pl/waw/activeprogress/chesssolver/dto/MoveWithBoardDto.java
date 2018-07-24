@@ -8,6 +8,7 @@ public class MoveWithBoardDto {
     private String longNotation;
     private String fen;
     private List<MoveWithBoardDto> nextMoves;
+    private String error;
 
     public MoveWithBoardDto(String moveName, String shortNotation, String longNotation, String fen, List<MoveWithBoardDto> nextMoves) {
         this.moveName = moveName;
@@ -15,6 +16,11 @@ public class MoveWithBoardDto {
         this.longNotation = longNotation;
         this.fen = fen;
         this.nextMoves = nextMoves;
+        this.error = null;
+    }
+
+    public MoveWithBoardDto(String error) {
+        this.error = error;
     }
 
     public MoveWithBoardDto() {
