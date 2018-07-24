@@ -45,4 +45,8 @@ public class MoveWithBoardDto {
     public List<MoveWithBoardDto> getNextMoves() {
         return nextMoves;
     }
+
+    public String getError() {
+        return error;
+    }
 }
